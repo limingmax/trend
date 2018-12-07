@@ -14,7 +14,6 @@ class MyClass(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-        print("=====开始初始化=====")
         self.data =data
         cf = configparser.ConfigParser()
         cf.read("python.ini")
@@ -24,10 +23,7 @@ class MyClass(threading.Thread):
         self.hbase_port = cf.getint("hbase", "port")
         self.consumer_topic=cf.get("kafka","consumer_topic")
         self.producer_topic=cf.get("kafka","producer_topic")
-        # self.kafka_host = '192.168.212.71'  # kafka服务器地址
-        # self.kafka_port = 9092  # kafka服务器端口
-        # self.hbase_host='192.168.195.1'
-        # self.hbase_port=9090
+      
         print(self.kafka_host, self.kafka_port, self.hbase_host, self.hbase_port,self.consumer_topic,self.producer_topic)
 
         self.connection=happybase.Connection(self.hbase_host, self.hbase_port)
@@ -49,7 +45,6 @@ class MyClass(threading.Thread):
             session_timeout_ms=6000,
             heartbeat_interval_ms=2000
         )
-        print("====初始化完成====")
     def month_handle(self,year,month):
         year=int(year)
         month=int(month)
@@ -73,7 +68,7 @@ class MyClass(threading.Thread):
         t = connection.table('Monitor_record')
         return_list = []
         result_list = []
-        # TODO 这里pretime要处理一下大概
+       
         pretime=int(pretime)
         if namespace:
             for i in range(pretime):
@@ -244,7 +239,6 @@ class MyClass(threading.Thread):
         producer.flush()
 
     def time_out_judge(self,time1,time2):
-        #time1是现在时，time2是历史UTC时
         year1,month1,day1,hour1=self.time_handle_now(time1)
         year2,month2,day2,hour2=self.time_handle_now(time2)
         year1=int(year1)
@@ -255,8 +249,7 @@ class MyClass(threading.Thread):
         day2=int(day2)
         hour1=int(hour1)
         hour2=int(hour2)
-        #False未过期 True过期了
-        t1 = datetime.datetime(year1, month1, day1, hour1)
+	    t1 = datetime.datetime(year1, month1, day1, hour1)
         t2 = datetime.datetime(year2, month2, day2, hour2)
         if((t1-t2).days>=1):
 
@@ -277,13 +270,8 @@ class MyClass(threading.Thread):
         else :
             return False
     def consumer_metric(self):
-        # 消费topic1的topic，并指定group_id(自定义)，多个机器或进程想顺序消费，可以指定同一个group_id，
-        # 如果想一条消费多次消费，可以换一个group_id,会从头开始消费
         consumer = self.consumer
-        print("=======开始消费==========")
         for message in consumer:
-            # json读取kafka的消息
-            # print(message.value)
             content = json.loads(message.value)
             # print(content)
             # print(type(content))
@@ -308,18 +296,16 @@ class MyClass(threading.Thread):
                     # print(type(i))
                     #非空判断
                     # 这里注意要字符串转float
-                    #还得注意是否存在这个属性
-
-                    # TODO 其他指标待添加
-                    if 'name'in i.keys():
+                  
+ 				    if 'name'in i.keys():
                         name = i['name']
                     else:
                         continue
                     timeinfo = i['time']
                     low=0
                     hign=0
-                    # 与内存中结果作对比，内存中找不到去每天存一份的日志找，日志中找不到就去数据库查？
-                    #flag过期或没有则为TRUE
+					
+					
                     cpu_flag=True
                     memory_flag=True
                     if name in self.data.keys():
@@ -372,8 +358,8 @@ class MyClass(threading.Thread):
                                                                       month, day, hour,
                                                                       self.data[name]["cpu/usage_rate"][
                                                                           "sampleDataTimeRange"])
-                                    # TODO 取数据
-                                    hign = 0
+                         
+									hign = 0
                                     low = 0
                                     if cpu_usage_rate_list:
                                         hign, low = self.NDtest(cpu_usage_rate_list)
@@ -458,8 +444,8 @@ class MyClass(threading.Thread):
         self.send(message)
 
     def NDtest(self,value_list):
-        # 正态性检验
-        XX = np.array(value_list)
+	
+		XX = np.array(value_list)
         m=XX.mean()
         s=XX.std()
         #这里要大于等于或小于等于，防止常数时列表为空
@@ -478,8 +464,9 @@ class MyClass(threading.Thread):
         med = np.median(p)
         # print(mu)
         # print(sigma)
-        # 偏度系数sk，衡量正太分布的偏态程度
-        sk = (mu - med) / sigma
+		
+     
+		sk = (mu - med) / sigma
         # print(sk)
         # 记录是否取过对数
         flag = 0
@@ -490,10 +477,8 @@ class MyClass(threading.Thread):
 
         mu = np.mean(p)
         sigma = np.std(p)
-        # 3sigma准则？
-
-        # 标准化,似乎不用了，阈值直接公式算一下
-        # p=(p-mu)/sigma
+       
+	  
         # mu = np.mean(p)
         # sigma = np.std(p)
         # print(p)
