@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: trend
+  template:
+    metadata:
+      labels:
+        name: trend
+    spec:
+      containers:
+        - name: trend
+          image: registry.cn-hangzhou.aliyuncs.com/limingmax-test/trend:v1 
+          env:
+          - name: REDIS_IP
+            value: "192.168.195.1"
+          - name: REDIS_PORT
+            value: "30088"
+          - name: HBASE_IP
+            value: "192.168.195.1"
+          - name: HBASE_PORT
+            value: "9090" 
+          command: ['/bin/bash', '/service/trend/src/start.sh']
+
+
