@@ -1,5 +1,4 @@
-FROM bitnami/python:3.6.7
-LABEL Author="wangrui<cfwr1991@126.com>"
+FROM registry.cn-hangzhou.aliyuncs.com/limingmax-test/ai-base:v1
 
 ENV REDIS_IP REDIS_IP
 ENV REDIS_PORT REDIS_PORT
@@ -8,12 +7,10 @@ ENV HBASE_IP HBASE_IP
 ENV HBASE_PORT HBASE_PORT
 
 COPY trend /service/trend
-WORKDIR /service/trend/src
-
 ADD start.sh /service/trend/src
 RUN chmod -R 777 /service/trend/src/start.sh
 
-RUN pip install -r /service/trend/src/requirements.txt
+WORKDIR /service/trend/src
 
 CMD ["/service/trend/src/start.sh"]
 
