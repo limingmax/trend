@@ -12,9 +12,19 @@ spec:
       labels:
         name: trend
     spec:
+      hostAliases:
+      - ip: "192.168.195.1"
+        hostnames:
+        - "k8s-alpha-master"
+      - ip: "192.168.195.2"
+        hostnames:
+        - "k8s-alpha-node1"
+      - ip: "192.168.195.3"
+        hostnames:
+        - "k8s-alpha-node2"
       containers:
         - name: trend
-          image: registry.cn-hangzhou.aliyuncs.com/limingmax-test/trend:v1 
+          image: registry.cn-hangzhou.aliyuncs.com/limingmax-test/trend:v2 
           env:
           - name: REDIS_IP
             value: "192.168.195.1"
@@ -24,6 +34,10 @@ spec:
             value: "192.168.195.1"
           - name: HBASE_PORT
             value: "9090" 
+          - name: REALMS_KDC
+            value: "k8s-alpha-master"
+          - name: REALMS_ADMIN_SERVER
+            value: "k8s-alpha-master"  
           command: ['/bin/bash', '/service/trend/src/start.sh']
 
 

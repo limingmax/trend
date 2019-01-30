@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 # @Time   : 2018-10-23
 # @Author : zxh
 from zutils.zrpc.server.threadpool_server import ThreadpoolServer, map_handle
@@ -9,13 +11,20 @@ import math
 import statsmodels.api as sm
 from statsmodels.graphics.tsaplots import acf,pacf,plot_acf,plot_pacf
 from statsmodels.tsa.arima_model import ARMA
-import happybase
 
 import json
 import cgi
-import socketserver
+import SocketServer
 
 import configparser
+
+import os
+from thrift.transport import TSocket
+from thrift.protocol import TBinaryProtocol
+from thrift.transport import TTransport
+from hbase_thrift.hbase import Hbase
+from hbase_thrift.hbase.ttypes import *
+
 cf = configparser.ConfigParser()
 cf.read("python.ini")
 hbase_host = cf.get("hbase", "host")
@@ -32,26 +41,43 @@ class ExampleSvr():
         #hbase_port = hbase_port
         print(hbase_port)
         print(hbase_host)
-        connection = happybase.Connection(hbase_host, hbase_port)
+        os.system('kinit -kt /etc/hbase.keytab hbase')
+	sock = TSocket.TSocket("k8s-alpha-master", 9090)
+	transport = TTransport.TSaslClientTransport(sock, "k8s-alpha-master", "hbase")
+	# Use the Binary protocol (must match your Thrift server's expected protocol)
+	protocol = TBinaryProtocol.TBinaryProtocol(transport)
+
+	client = Hbase.Client(protocol)
+	transport.open()
+	table='Monitor_record'
+		
         print("===end===")
         # connection = testHTTPServer_RequestHandler.connection
-        t = connection.table('Monitor_record')
+        table='Monitor_record'
         last = 0
         result_list = []
         print("namespace",namespace)
-        if(namespace):
-            year, month, day = self.time_handle(year, month, day)
-            year, month, day = self.time_handle(year, month, day)
-            filter1 = bytes(
-                "SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-.*T.*:00:00') AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:pod')AND SingleColumnValueFilter ('Metric', 'namespace_name', =, 'binary:{namespace}')".format(
-                    resource=resource, metric=metric, year=year, month=month,namespace=namespace), encoding='utf-8')
-            result = t.scan(filter=filter1,row_start=bytes('{year}-{month}-{day}'.format(year=year,month=month,day=day),encoding='utf-8'))
-            list1=[]
+	year, month, day = self.time_handle(year, month, day)
+        year, month, day = self.time_handle(year, month, day)
+	pre='{year}-{month}-{day}'.format(year=year, month=month, day=day)
 
-            for k, v in result:
-                print(k,v)
-                list1.append(float(v[b'Metric:index_value'].decode()))
-                last = k
+        if(namespace):
+            
+            filter1 = "RowFilter(=, 'substring:{pre}')AND SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-.*T.*:00:00') AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:pod')AND SingleColumnValueFilter ('Metric', 'namespace_name', =, 'binary:{namespace}')".format(
+                    resource=resource, metric=metric, year=year, month=month,namespace=namespace,pre=pre)
+            list1=[]
+	    tscan=TScan(
+				filterString=filter1
+				)    
+            sid=client.scannerOpenWithScan(table,tscan,{})
+	    result=client.scannerGet(sid)
+	    while result:
+				print result
+				list1.append(float(result[0].columns.get("Metric:index_value").value))
+				last=result[0].row
+				result=client.scannerGet(sid)
+
+           
                 # print(last)
 
             # year, month, day = self.time_handle(year, month, day)
@@ -79,20 +105,21 @@ class ExampleSvr():
             # print(list1,"1",list2,"2",list3,"3")
             result_list =  list1
         else:
-            year, month, day = self.time_handle(year, month, day)
-            year, month, day = self.time_handle(year, month, day)
+            
 
-            filter1 = bytes(
-                "SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-.*T.*:00:00')AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:node') ".format(
-                    resource=resource, metric=metric, year=year, month=month), encoding='utf-8')
-            result = t.scan(filter=filter1,
-                            row_start=bytes('{year}-{month}-{day}'.format(year=year, month=month, day=day),
-                                             encoding='utf-8'))
-            list1 = []
-            for k, v in result:
-                print(k,v)
-                list1.append(float(v[b'Metric:index_value'].decode()))
-                last = k
+            filter1 =  "RowFilter(=, 'substring:{pre}')AND SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-.*T.*:00:00')AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:node') ".format(
+                    resource=resource, metric=metric, year=year, month=month,pre=pre)
+            list1=[]
+	    tscan=TScan(
+				filterString=filter1
+				)    
+            sid=client.scannerOpenWithScan(table,tscan,{})
+	    result=client.scannerGet(sid)
+	    while result:
+				print result
+				list1.append(float(result[0].columns.get("Metric:index_value").value))
+				last=result[0].row
+				result=client.scannerGet(sid)
                 # print(last)
             # year, month, day = self.time_handle(year, month, day)
             # filter2 = bytes(
@@ -130,7 +157,8 @@ class ExampleSvr():
             raise  Exception("缺少目标容器节点近期数据")
         if not last:
             raise  Exception("未发现startTime当天之前的数据")
-        return result_list, last.decode()
+        transport.close()
+	return result_list, last.decode()
 
     def time_handle(self,year, month, day):
         year = int(year)
@@ -158,7 +186,7 @@ class ExampleSvr():
         if (month >= 10):
             month = str(month)
         else:
-            month = '0' + month
+            month = '0' +str(month)
         if (day >= 10):
             day = str(day)
         else:
@@ -342,9 +370,9 @@ class ExampleSvr():
             "time":timere,
             "value":result
         }
-        # print(res)
-        # a=json.dumps(res)
-        return res
+        print(res)
+        a=json.dumps(res)
+        return a
 
 
 
