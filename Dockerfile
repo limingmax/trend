@@ -9,6 +9,8 @@ COPY trend /service/trend
 ADD start.sh /service/trend/src
 RUN chmod -R 777 /service/trend/src/start.sh
 
+RUN pip uninstall --yes numpy && pip install nump
+
 WORKDIR /service/trend/src
 
 CMD ["/service/trend/src/start.sh"]
