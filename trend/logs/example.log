@@ -4200,3 +4200,138 @@ KeyboardInterrupt
 2019-01-13 16:31:56,839 - threadpool_server.py[76] - INFO: 140655341680384 ['/trend'] free
 2019-01-13 16:32:26,943 - threadpool_server.py[76] - INFO: 140655341680384 ['/trend'] free
 2019-01-13 16:32:56,950 - threadpool_server.py[76] - INFO: 140655341680384 ['/trend'] free
+2019-01-24 00:50:36,762 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:51:06,862 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:51:36,958 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:51:37,149 - threadpool_server.py[78] - INFO: RECV:TASK_INCRID_AISVR_/trend_7
+2019-01-24 00:51:37,151 - threadpool_server.py[84] - ERROR: Traceback (most recent call last):
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/zutils/zrpc/server/threadpool_server.py", line 80, in work_thread
+    result = requests_map[request.task_name](request.task)
+  File "example_server.py", line 271, in handle1
+    metric=record["metric"]
+KeyError: 'metric'
+
+2019-01-24 00:51:37,154 - threadpool_server.py[86] - INFO: SENDERROR:TASK_INCRID_AISVR_/trend_7
+2019-01-24 00:52:07,171 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:52:37,273 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:53:07,299 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:53:13,658 - threadpool_server.py[78] - INFO: RECV:TASK_INCRID_AISVR_/trend_8
+2019-01-24 00:53:47,118 - threadpool_server.py[84] - ERROR: Traceback (most recent call last):
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/zutils/zrpc/server/threadpool_server.py", line 80, in work_thread
+    result = requests_map[request.task_name](request.task)
+  File "example_server.py", line 289, in handle1
+    q=self.countTime(endTime,time)
+  File "example_server.py", line 146, in countTime
+    year2,month2,day2,hour2=self.raw_key_time(time2)
+  File "example_server.py", line 140, in raw_key_time
+    year, month, time = c.split('-')
+ValueError: too many values to unpack
+
+2019-01-24 00:53:47,124 - threadpool_server.py[86] - INFO: SENDERROR:TASK_INCRID_AISVR_/trend_8
+2019-01-24 00:54:17,192 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:54:47,215 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:55:17,314 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:55:47,407 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:56:17,499 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 00:56:47,594 - threadpool_server.py[76] - INFO: 139694195283712 ['/trend'] free
+2019-01-24 01:03:09,036 - threadpool_server.py[78] - INFO: RECV:TASK_INCRID_AISVR_/trend_9
+2019-01-24 01:03:33,827 - threadpool_server.py[89] - ERROR: Traceback (most recent call last):
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/zutils/zrpc/server/threadpool_server.py", line 80, in work_thread
+    result = requests_map[request.task_name](request.task)
+  File "example_server.py", line 288, in handle1
+    result, time = self.select(metric, deviceName, year, month, day,namespace)
+  File "example_server.py", line 82, in select
+    result=client.scannerGet(sid)
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/hbase_thrift/hbase/Hbase.py", line 2244, in scannerGet
+    return self.recv_scannerGet()
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/hbase_thrift/hbase/Hbase.py", line 2256, in recv_scannerGet
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/protocol/TBinaryProtocol.py", line 126, in readMessageBegin
+    sz = self.readI32()
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/protocol/TBinaryProtocol.py", line 206, in readI32
+    buff = self.trans.readAll(4)
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/transport/TTransport.py", line 58, in readAll
+    chunk = self.read(sz - have)
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/transport/TTransport.py", line 419, in read
+    self._read_frame()
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/transport/TTransport.py", line 423, in _read_frame
+    header = self.transport.readAll(4)
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/transport/TTransport.py", line 58, in readAll
+    chunk = self.read(sz - have)
+  File "/home/z/.local/lib/python2.7/site-packages/thrift/transport/TSocket.py", line 105, in read
+    buff = self.handle.recv(sz)
+KeyboardInterrupt
+
+2019-01-24 01:15:29,952 - threadpool_server.py[78] - INFO: RECV:TASK_INCRID_AISVR_/trend_10
+2019-01-24 01:16:05,136 - threadpool_server.py[84] - ERROR: Traceback (most recent call last):
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/zutils/zrpc/server/threadpool_server.py", line 80, in work_thread
+    result = requests_map[request.task_name](request.task)
+  File "example_server.py", line 302, in handle1
+    result=self.pre(result, q)
+  File "example_server.py", line 212, in pre
+    predict_data = arma_model.predict(start=str(1901), end=str(1900 + length - 1 + day), dynamic=False)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/base/wrapper.py", line 95, in wrapper
+    obj = data.wrap_output(func(results, *args, **kwargs), how)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/arima_model.py", line 1506, in predict
+    return self.model.predict(self.params, start, end, exog, dynamic)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/arima_model.py", line 719, in predict
+    self._get_prediction_index(start, end, dynamic))
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/arima_model.py", line 651, in _get_prediction_index
+    super(ARMA, self)._get_prediction_index(start, end, index))
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/base/tsa_model.py", line 484, in _get_prediction_index
+    end, end_index, end_oos = self._get_index_label_loc(end)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/base/tsa_model.py", line 412, in _get_index_label_loc
+    self._get_index_loc(key, base_index))
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/base/tsa_model.py", line 330, in _get_index_loc
+    date_key = Timestamp(key)
+  File "pandas/_libs/tslibs/timestamps.pyx", line 644, in pandas._libs.tslibs.timestamps.Timestamp.__new__
+  File "pandas/_libs/tslibs/conversion.pyx", line 275, in pandas._libs.tslibs.conversion.convert_to_tsobject
+  File "pandas/_libs/tslibs/conversion.pyx", line 470, in pandas._libs.tslibs.conversion.convert_str_to_tsobject
+  File "pandas/_libs/tslibs/conversion.pyx", line 439, in pandas._libs.tslibs.conversion.convert_str_to_tsobject
+  File "pandas/_libs/tslibs/np_datetime.pyx", line 121, in pandas._libs.tslibs.np_datetime.check_dts_bounds
+OutOfBoundsDatetime: Out of bounds nanosecond timestamp: 3663-01-01 00:00:00
+
+2019-01-24 01:16:05,146 - threadpool_server.py[86] - INFO: SENDERROR:TASK_INCRID_AISVR_/trend_10
+2019-01-24 01:16:35,205 - threadpool_server.py[76] - INFO: 140103284152064 ['/trend'] free
+2019-01-24 01:17:05,215 - threadpool_server.py[76] - INFO: 140103284152064 ['/trend'] free
+2019-01-24 01:17:35,262 - threadpool_server.py[76] - INFO: 140103284152064 ['/trend'] free
+2019-01-24 01:18:05,269 - threadpool_server.py[76] - INFO: 140103284152064 ['/trend'] free
+2019-01-24 02:11:41,666 - threadpool_server.py[78] - INFO: RECV:TASK_INCRID_AISVR_/trend_11
+2019-01-24 02:12:04,044 - threadpool_server.py[84] - ERROR: Traceback (most recent call last):
+  File "/home/z/workspace/new_ai-alert/ai-alert/trend/src/zutils/zrpc/server/threadpool_server.py", line 80, in work_thread
+    result = requests_map[request.task_name](request.task)
+  File "example_server.py", line 302, in handle1
+    result=self.pre(result, q)
+  File "example_server.py", line 212, in pre
+    predict_data = arma_model.predict(start=str(1901), end=str(1900 + length - 1 + day), dynamic=False)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/base/wrapper.py", line 95, in wrapper
+    obj = data.wrap_output(func(results, *args, **kwargs), how)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/arima_model.py", line 1506, in predict
+    return self.model.predict(self.params, start, end, exog, dynamic)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/arima_model.py", line 719, in predict
+    self._get_prediction_index(start, end, dynamic))
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/arima_model.py", line 651, in _get_prediction_index
+    super(ARMA, self)._get_prediction_index(start, end, index))
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/base/tsa_model.py", line 484, in _get_prediction_index
+    end, end_index, end_oos = self._get_index_label_loc(end)
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/base/tsa_model.py", line 412, in _get_index_label_loc
+    self._get_index_loc(key, base_index))
+  File "/home/z/.local/lib/python2.7/site-packages/statsmodels/tsa/base/tsa_model.py", line 330, in _get_index_loc
+    date_key = Timestamp(key)
+  File "pandas/_libs/tslibs/timestamps.pyx", line 644, in pandas._libs.tslibs.timestamps.Timestamp.__new__
+  File "pandas/_libs/tslibs/conversion.pyx", line 275, in pandas._libs.tslibs.conversion.convert_to_tsobject
+  File "pandas/_libs/tslibs/conversion.pyx", line 470, in pandas._libs.tslibs.conversion.convert_str_to_tsobject
+  File "pandas/_libs/tslibs/conversion.pyx", line 439, in pandas._libs.tslibs.conversion.convert_str_to_tsobject
+  File "pandas/_libs/tslibs/np_datetime.pyx", line 121, in pandas._libs.tslibs.np_datetime.check_dts_bounds
+OutOfBoundsDatetime: Out of bounds nanosecond timestamp: 3660-01-01 00:00:00
+
+2019-01-24 02:12:04,047 - threadpool_server.py[86] - INFO: SENDERROR:TASK_INCRID_AISVR_/trend_11
+2019-01-24 02:12:34,072 - threadpool_server.py[76] - INFO: 139851744528128 ['/trend'] free
+2019-01-24 02:13:04,079 - threadpool_server.py[76] - INFO: 139851744528128 ['/trend'] free
+2019-01-24 02:13:35,828 - threadpool_server.py[76] - INFO: 139851744528128 ['/trend'] free
+2019-01-24 02:14:06,913 - threadpool_server.py[76] - INFO: 139851744528128 ['/trend'] free
+2019-01-24 02:14:36,934 - threadpool_server.py[76] - INFO: 139851744528128 ['/trend'] free
+2019-01-24 02:15:07,036 - threadpool_server.py[76] - INFO: 139851744528128 ['/trend'] free
+2019-01-24 02:36:52,794 - threadpool_server.py[78] - INFO: RECV:TASK_INCRID_AISVR_/trend_12
+2019-01-24 02:37:13,937 - threadpool_server.py[82] - INFO: SEND:TASK_INCRID_AISVR_/trend_12
+2019-01-24 02:37:43,995 - threadpool_server.py[76] - INFO: 139633881880320 ['/trend'] free

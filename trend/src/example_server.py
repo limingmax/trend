@@ -30,8 +30,7 @@ cf.read("python.ini")
 hbase_host = cf.get("hbase", "host")
 hbase_port = cf.getint("hbase", "port")
 register_address=cf.get("register","address")
-
-
+t=int(cf.get("time","t"))
 # 创建服务，单例，如果资源有竞争，创建放在func里
 @map_handle('/trend', 'handle1', 10)
 class ExampleSvr():
@@ -39,125 +38,63 @@ class ExampleSvr():
         print("===start===")
         #base_host = hbase_host
         #hbase_port = hbase_port
-        print(hbase_port)
-        print(hbase_host)
         os.system('kinit -kt /etc/hbase.keytab hbase')
-	sock = TSocket.TSocket("k8s-alpha-master", 9090)
-	transport = TTransport.TSaslClientTransport(sock, "k8s-alpha-master", "hbase")
+        sock = TSocket.TSocket(hbase_host, hbase_port)
+        transport = TTransport.TSaslClientTransport(sock, hbase_host, "hbase")
 	# Use the Binary protocol (must match your Thrift server's expected protocol)
-	protocol = TBinaryProtocol.TBinaryProtocol(transport)
-
-	client = Hbase.Client(protocol)
-	transport.open()
-	table='Monitor_record'
-		
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
+        client = Hbase.Client(protocol)
+        transport.open()
+        table='Monitor_record'		
         print("===end===")
         # connection = testHTTPServer_RequestHandler.connection
         table='Monitor_record'
         last = 0
         result_list = []
+        listtotal=[]
+		
         print("namespace",namespace)
-	year, month, day = self.time_handle(year, month, day)
-        year, month, day = self.time_handle(year, month, day)
-	pre='{year}-{month}-{day}'.format(year=year, month=month, day=day)
-
-        if(namespace):
-            
-            filter1 = "RowFilter(=, 'substring:{pre}')AND SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-.*T.*:00:00') AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:pod')AND SingleColumnValueFilter ('Metric', 'namespace_name', =, 'binary:{namespace}')".format(
-                    resource=resource, metric=metric, year=year, month=month,namespace=namespace,pre=pre)
+        for i in range(t):						
+          if(namespace):
             list1=[]
-	    tscan=TScan(
-				filterString=filter1
-				)    
-            sid=client.scannerOpenWithScan(table,tscan,{})
-	    result=client.scannerGet(sid)
-	    while result:
-				print result
-				list1.append(float(result[0].columns.get("Metric:index_value").value))
-				last=result[0].row
-				result=client.scannerGet(sid)
-
-           
-                # print(last)
-
-            # year, month, day = self.time_handle(year, month, day)
-            # filter2 = bytes(
-            #     " SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-{day}T.*:00:00')AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:pod')AND SingleColumnValueFilter ('Metric', 'namespace_name', =, 'binary:{namespace}') ".format(
-            #         resource=resource, metric=metric, year=year, day=day, month=month,namespace=namespace), encoding='utf-8')
-            # result = t.scan(filter=filter2,row_prefix=bytes('{year}-{month}-{day}'.format(year=year,month=month,day=day),encoding='utf-8'))
-            # list2=[]
-            # for k, v in result:
-            #     print(k, v)
-            #     list2.append(float(v[b'Metric:index_value'].decode()))
-            # year, month, day = self.time_handle(year, month, day)
-            # filter3 = bytes(
-            #     " SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-{day}T.*:00:00')AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:pod')AND SingleColumnValueFilter ('Metric', 'namespace_name', =, 'binary:{namespace}') ".format(
-            #         resource=resource, metric=metric, year=year, day=day, month=month, namespace=namespace),
-            #     encoding='utf-8')
-            # print(33333333)
-            # result = t.scan(filter=filter3,
-            #                 row_prefix=bytes('{year}-{month}-{day}'.format(year=year, month=month, day=day),
-            #                                  encoding='utf-8'))
-            # list3=[]
-            # for k, v in result:
-            #     print(k, v)
-            #     list3.append(float(v[b'Metric:index_value'].decode()))
-            # print(list1,"1",list2,"2",list3,"3")
+            for hour in range(24):
+                if hour<9:
+                    hour="0"+str(hour)
+                else:
+                    hour=str(hour)
+                rowkey="{metric}_{resource}_{namespace}_{year}-{month}-{day}T{hour}:00:00Z".format(metric=metric,resource=resource,namespace=namespace,year=year,month=month,day=day,hour=hour)
+                result=client.getRow(table,rowkey,None)
+                if result:
+                    list1.append(float(result[0].columns.get("Metric:index_value").value))
+                    if i==0:
+                        last=result[0].columns.get("Metric:time").value
             result_list =  list1
-        else:
-            
+          else:
+	    list1=[]
+            for hour in range(24):
+                if hour<9:
+                    hour="0"+str(hour)
+                else:
+                    hour=str(hour)
+                rowkey="{metric}_{resource}_{year}-{month}-{day}T{hour}:00:00Z".format(metric=metric,resource=resource,year=year,month=month,day=day,hour=hour)
+                result=client.getRow(table,rowkey,None)
+                if result:
 
-            filter1 =  "RowFilter(=, 'substring:{pre}')AND SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-.*T.*:00:00')AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:node') ".format(
-                    resource=resource, metric=metric, year=year, month=month,pre=pre)
-            list1=[]
-	    tscan=TScan(
-				filterString=filter1
-				)    
-            sid=client.scannerOpenWithScan(table,tscan,{})
-	    result=client.scannerGet(sid)
-	    while result:
-				print result
-				list1.append(float(result[0].columns.get("Metric:index_value").value))
-				last=result[0].row
-				result=client.scannerGet(sid)
-                # print(last)
-            # year, month, day = self.time_handle(year, month, day)
-            # filter2 = bytes(
-            #     " SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-{day}T.*:00:00') AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:node')".format(
-            #         resource=resource, metric=metric, year=year, day=day, month=month), encoding='utf-8')
-            # result = t.scan(filter=filter2,
-            #                 row_prefix=bytes('{year}-{month}-{day}'.format(year=year, month=month, day=day),
-            #                                  encoding='utf-8'))
-            # list2=[]
-            # for k, v in result:
-            #     print(k, v)
-            #     list2.append(float(v[b'Metric:index_value'].decode()))
-            #
-            # year, month, day = self.time_handle(year, month, day)
-            # print(33333333)
-            #
-            # filter3 = bytes(
-            #     " SingleColumnValueFilter ('Metric', 'resourceName', =, 'binary:{resource}') AND SingleColumnValueFilter ('Metric', 'index_name', =, 'binary:{metric}') AND SingleColumnValueFilter ('Metric', 'time', =, 'regexstring:{year}-{month}-{day}T.*:00:00')AND SingleColumnValueFilter ('Metric', 'type', =, 'binary:pod')AND SingleColumnValueFilter ('Metric', 'namespace_name', =, 'binary:{namespace}') ".format(
-            #         resource=resource, metric=metric, year=year, day=day, month=month, namespace=namespace),
-            #     encoding='utf-8')
-            # result = t.scan(filter=filter3,
-            #                 row_prefix=bytes('{year}-{month}-{day}'.format(year=year, month=month, day=day),
-            #                                  encoding='utf-8'))
-            # print(result)
-            # list3=[]
-            # print(33333333)
-            #
-            # for k, v in result:
-            #     print(k, v)
-            #     list3.append(float(v[b'Metric:index_value'].decode()))
-            # print(list1, "1", list2, "2", list3, "3")
+                    list1.append(float(result[0].columns.get("Metric:index_value").value))
+                    if  i==0:
+                        last=result[0].columns.get("Metric:time").value
             result_list=list1
-        print(result_list)
-        if not result_list:
+          year, month, day = self.time_handle(year, month, day)
+          listtotal.append(result_list)		
+        if not listtotal:
             raise  Exception("缺少目标容器节点近期数据")
         if not last:
             raise  Exception("未发现startTime当天之前的数据")
         transport.close()
+        listtotal.reverse()
+        result_list=[]
+        for li in listtotal:
+            result_list+=li
 	return result_list, last.decode()
 
     def time_handle(self,year, month, day):
