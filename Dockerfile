@@ -1,10 +1,7 @@
-FROM registry.cn-hangzhou.aliyuncs.com/limingmax-test/ai-base:v1
+FROM registry.cn-hangzhou.aliyuncs.com/limingmax-test/ai-base:v3
 
-ENV REDIS_IP REDIS_IP
-ENV REDIS_PORT REDIS_PORT
-
-ENV HBASE_IP HBASE_IP
-ENV HBASE_PORT HBASE_PORT
+ADD hbase.keytab /etc
+ADD krb5.conf /etc
 
 COPY trend /service/trend
 ADD start.sh /service/trend/src
