@@ -9,8 +9,9 @@ COPY trend /service/trend
 ADD start.sh /service/trend/src
 RUN chmod -R 777 /service/trend/src/start.sh
 
+# numpy 版本为：1.16.0
 RUN pip uninstall --yes numpy
-RUN pip install nump
+RUN pip install numpy:1.16.0
 
 WORKDIR /service/trend/src
 
