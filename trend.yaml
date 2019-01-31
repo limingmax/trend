@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: trend
+  namespace: ai
 spec:
   replicas: 1
   selector:
@@ -24,7 +25,7 @@ spec:
         - "k8s-alpha-node2"
       containers:
         - name: trend
-          image: registry.cn-hangzhou.aliyuncs.com/limingmax-test/trend:v2 
+          image: registry.cn-hangzhou.aliyuncs.com/limingmax-test/trend:v7 
           env:
           - name: REDIS_IP
             value: "192.168.195.1"
